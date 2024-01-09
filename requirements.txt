@@ -10,4 +10,7 @@ pyyaml
 ua-parser 
 user-agents
 gunicorn
+jose
+urllib
+functools
 
