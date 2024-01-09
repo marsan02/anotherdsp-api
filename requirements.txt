@@ -1,0 +1,13 @@
+python-dotenv
+flask
+flask_cors
+pymongo
+requests
+geoip2
+certifi
+pycountry
+pyyaml 
+ua-parser 
+user-agents
+gunicorn
+
