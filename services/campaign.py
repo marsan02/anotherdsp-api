@@ -1,21 +1,23 @@
 from flask import Flask, request, jsonify, request, render_template, redirect,url_for
 import requests
+from bson import ObjectId
 
-def get_campaign(campaign_name,client):
+def get_campaign(campaign_id,client):
     # Get a single campaign
     # Select the database
     db = client['campaigns']
     campaigns = db.campaigns
-    campaign = campaigns.find_one({"campaign_name": campaign_name}, {'_id': 0})
+    campaign_id = ObjectId(campaign_id)
+    campaign = campaigns.find_one({"_id": campaign_id}, {'_id': 0})
     if campaign:
         return jsonify(campaign)
     else:
         return jsonify({"message": "Campaign not found" }), 404
 
-def put_campaign(campaign_name,update_data,client):
+def put_campaign(campaign_id,update_data,client):
     db = client['campaigns']
     campaigns = db.campaigns
-    result = campaigns.update_one({"campaign_name": campaign_name}, {"$set": updated_data})
+    result = campaigns.update_one({"_id": campaign_id}, {"$set": updated_data})
     if result.matched_count:
         return jsonify({"message": "Campaign updated"})
     else:
@@ -33,8 +35,12 @@ def delete_campaign(campaign_name,client):
 def list_all_campaigns(client):
     db = client['campaigns']
     campaigns = db.campaigns
-    all_campaigns = list(campaigns.find({}, {'_id': 0}))
-    return jsonify(all_campaigns)
+    all_campaigns_with_id = list(campaigns.find({}))
+    for item in all_campaigns_with_id:
+        print(item)
+        item["_id"] = str(item["_id"])
+    print(all_campaigns_with_id)
+    return jsonify(all_campaigns_with_id)
 
 def post_campaign(request,client):
     db = client['campaigns']

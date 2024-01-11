@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, request, render_template, redirect,url_for
 import requests
+from bson import ObjectId
+
 
 def get_creative(client, filters):
     # Select the database and collection
@@ -14,10 +16,12 @@ def get_creative(client, filters):
         query[field_name] = filter_value
     print(query)
     # Find the creative(s) that match the dynamic query
-    result = list(creatives.find(query, {'_id': 0}))
-
-    if result:
-        return jsonify(result)
+    all_creatives = list(creatives.find(query))
+    for item in all_creatives:
+        print(item)
+        item["_id"] = str(item["_id"])
+    if all_creatives:
+        return jsonify(all_creatives)
     else:
         return jsonify({"message": "creative not found"}), 404
 
@@ -42,7 +46,12 @@ def delete_creative(creative_name,client):
 def list_all_creatives(client):
     db = client['creatives']
     creatives = db.creatives
-    all_creatives = list(creatives.find({}, {'_id': 0}))
+    all_creatives = list(creatives.find({}))
+    for item in all_creatives:
+        print(item)
+        item["_id"] = str(item["_id"])
+    return jsonify(all_creatives)
+
     return jsonify(all_creatives)
 
 def post_creative(request,client):

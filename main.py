@@ -26,25 +26,30 @@ def configure_routes(app):
     def get_countries():
         return geo_api.get_countries()
 
-    @app.route('/submit-campaign', methods=['POST'])
+    @app.route('/submit-campaign', methods=['POST','PUT'])
     @requires_auth
     def submit_campaign():
-        return campaigns.post_campaign(request,client)
-
+        if request.method == 'POST':
+            #retrieve campaign
+            return campaigns.post_campaign(request,client)
+        elif request.method == 'PUT':
+            # Update a campaign
+            campaign_id=request.args['_id']
+            return campaigns.put_campaign(campaign_id,request.json,client)
     @app.route('/campaigns', methods=['GET'])
     @requires_auth
     def manage_campaigns():
         return campaigns.list_all_campaigns(client)
 
-    @app.route('/campaigns/<campaign_name>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/campaign', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_campaign(campaign_name):
+    def process_campaign():
         if request.method == 'GET':
             #retrieve campaign
-            return campaigns.get_campaign(campaign_name,client)
+            return campaigns.get_campaign(request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a campaign
-            return campaigns.put_campaign(campaign_name,request.json,client)
+            return campaigns.put_campaign(request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a campaign
