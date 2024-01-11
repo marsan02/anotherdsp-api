@@ -58,7 +58,8 @@ def configure_routes(app):
     @app.route('/creatives', methods=['GET'])
     @requires_auth
     def manage_creatives():
-        return creatives.list_all_creatives(client)
+        print(request.args)
+        return creatives.get_creative(client,request.args)
 
     @app.route('/creatives/<creative_name>', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth

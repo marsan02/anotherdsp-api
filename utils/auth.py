@@ -51,8 +51,6 @@ def check_permissions(permission, payload):
 def verify_decode_jwt(token):
     """Decodes the JWT Token"""
     try:
-        print("verifying token")
-        print(token)
         jsonurl = urlopen(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
@@ -92,7 +90,6 @@ def requires_auth(f):
     def decorated_function(*args, **kwargs):
         # Your authentication logic here...
         # For example, getting and verifying the token
-        print("checking auth")
         try:
             token = get_token_auth_header()
             payload = verify_decode_jwt(token)

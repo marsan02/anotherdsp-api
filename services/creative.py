@@ -1,16 +1,25 @@
 from flask import Flask, request, jsonify, request, render_template, redirect,url_for
 import requests
 
-def get_creative(creative_name,client):
-    # Get a single creative
-    # Select the database
+def get_creative(client, filters):
+    # Select the database and collection
     db = client['creatives']
     creatives = db.creatives
-    creative = creatives.find_one({"creative_name": creative_name}, {'_id': 0})
-    if creative:
-        return jsonify(creative)
+
+    # Construct a dynamic query based on the filters
+    query = {}
+    for filter in filters:
+        field_name = filter.get("field_name")
+        filter_value = filter.get("filter_value")
+        query[field_name] = filter_value
+    print(query)
+    # Find the creative(s) that match the dynamic query
+    result = list(creatives.find(query, {'_id': 0}))
+
+    if result:
+        return jsonify(result)
     else:
-        return jsonify({"message": "creative not found" }), 404
+        return jsonify({"message": "creative not found"}), 404
 
 def put_creative(creative_name,update_data,client):
     db = client['creatives']

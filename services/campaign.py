@@ -44,7 +44,6 @@ def post_campaign(request,client):
         # Extract form data
         data = request.get_json()
         campaign_name = data['campaign_name']
-        ad_sizes = data['ad_sizes'].split(',')
         ad_types = data['ad_types']
         creatives = data['creatives'].split(',')
         device_types = data['device_types']
@@ -60,7 +59,6 @@ def post_campaign(request,client):
 
         # Create the data payload in the required format
         payload = [{
-            "ad_sizes": ad_sizes,
             "ad_types": ad_types,
             "campaign_name": campaign_name,
             "creatives": creatives,
