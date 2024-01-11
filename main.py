@@ -7,6 +7,8 @@ import requests
 from utils.auth import requires_auth, handle_auth_error, AuthError
 import os
 import services.campaign as campaigns
+import services.creative as creatives
+
 load_dotenv()  # This loads the environment variables from .env
 
 
@@ -47,6 +49,30 @@ def configure_routes(app):
         elif request.method == 'DELETE':
             # Delete a campaign
             return campaigns.delete_campaign(campaign_name,client)
+
+    @app.route('/submit-creative', methods=['POST'])
+    @requires_auth
+    def submit_creative():
+        return creatives.post_creative(request,client)
+
+    @app.route('/creatives', methods=['GET'])
+    @requires_auth
+    def manage_creatives():
+        return creatives.list_all_creatives(client)
+
+    @app.route('/creatives/<creative_name>', methods=['GET', 'PUT', 'DELETE'])
+    @requires_auth
+    def process_creative(creative_name):
+        if request.method == 'GET':
+            #retrieve creative
+            return creatives.get_creative(creative_name,client)
+        elif request.method == 'PUT':
+            # Update a creative
+            return creatives.put_creative(creative_name,request.json,client)
+    
+        elif request.method == 'DELETE':
+            # Delete a creative
+            return creative.delete_creative(creative_name,client)
 
     # Example of a protected route
     @app.route('/')
