@@ -17,7 +17,7 @@ def initialize():
 
 def check_ip(geoip_reader,ip_address):
     response = geoip_reader.country(ip_address)
-    print(response)
+    (response)
     country = response.country.name
     return country
 

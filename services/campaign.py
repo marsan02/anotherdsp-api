@@ -14,13 +14,17 @@ def get_campaign(campaign_id,client):
     else:
         return jsonify({"message": "Campaign not found" }), 404
 
-def put_campaign(campaign_id,update_data,client):
+def put_campaign(campaign_id,request,client):
     db = client['campaigns']
     campaigns = db.campaigns
-    result = campaigns.update_one({"_id": campaign_id}, {"$set": updated_data})
+    campaign_id=ObjectId(campaign_id)
+    payload = prepare_data(request.get_json())[0]
+    result = campaigns.update_one({"_id": campaign_id}, {"$set": payload})
     if result.matched_count:
+        print("updated")
         return jsonify({"message": "Campaign updated"})
     else:
+        print("error)")
         return jsonify({"message": "Campaign not found"}), 404
 
 def delete_campaign(campaign_name,client):
@@ -39,7 +43,6 @@ def list_all_campaigns(client):
     for item in all_campaigns_with_id:
         print(item)
         item["_id"] = str(item["_id"])
-    print(all_campaigns_with_id)
     return jsonify(all_campaigns_with_id)
 
 def post_campaign(request,client):
@@ -47,42 +50,8 @@ def post_campaign(request,client):
     campaigns = db.campaigns
     print("Submitting Campaign")
     try:
-        # Extract form data
-        data = request.get_json()
-        campaign_name = data['campaign_name']
-        ad_types = data['ad_types']
-        creatives = data['creatives'].split(',')
-        device_types = data['device_types']
-        geography = data['geography']
-        inventory_type = data['inventory_type']
-        revenue_per_day = int(data['revenue_per_day'])
-        state = data['state']
-        total_budget = int(data['total_budget'])
-        start_date = data['start_date']
-        end_date = data['end_date']
-        goal_type = data['goal_type']
-        goal_value= data['goal_value']
 
-        # Create the data payload in the required format
-        payload = [{
-            "ad_types": ad_types,
-            "campaign_name": campaign_name,
-            "creatives": creatives,
-            "device_types": device_types,
-            "flight_dates": {
-                "start": start_date,
-                "end": end_date
-            },
-            "geography": geography,
-            "inventory_type": inventory_type,
-            "revenue_per_day": revenue_per_day,
-            "state": state,
-            "total_budget": total_budget,
-            "goal_type":goal_type,
-            "goal_value":goal_value
-        }]
-        print(payload)
-        campaign_data = payload
+        campaign_data = prepare_data(request.get_json())
         try:
             campaigns.insert_one(campaign_data[0])
             return jsonify({"message": "Campaign added"}), 201
@@ -94,3 +63,40 @@ def post_campaign(request,client):
         # Handle exceptions
         print(e)
         return str(e), 500
+
+def prepare_data(data):
+        # Extract form data
+    campaign_name = data['campaign_name']
+    ad_types = data['ad_types']
+    creatives = data['creatives']
+    device_types = data['device_types']
+    geography = data['geography']
+    inventory_type = data['inventory_type']
+    revenue_per_day = int(data['revenue_per_day'])
+    state = data['state']
+    total_budget = int(data['total_budget'])
+    start_date = data['start_date']
+    end_date = data['end_date']
+    goal_type = data['goal_type']
+    goal_value= data['goal_value']
+    inventory = data['inventory']
+    # Create the data payload in the required format
+    payload = [{
+        "ad_types": ad_types,
+        "campaign_name": campaign_name,
+        "creatives": creatives,
+        "device_types": device_types,
+        "flight_dates": {
+            "start": start_date,
+            "end": end_date
+        },
+        "geography": geography,
+        "inventory_type": inventory_type,
+        "revenue_per_day": revenue_per_day,
+        "state": state,
+        "total_budget": total_budget,
+        "goal_type":goal_type,
+        "goal_value":goal_value,
+        "inventory":inventory
+        }]
+    return payload

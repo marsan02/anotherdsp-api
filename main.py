@@ -34,8 +34,8 @@ def configure_routes(app):
             return campaigns.post_campaign(request,client)
         elif request.method == 'PUT':
             # Update a campaign
-            campaign_id=request.args['_id']
-            return campaigns.put_campaign(campaign_id,request.json,client)
+            campaign_id=request.args.get('_id')
+            return campaigns.put_campaign(campaign_id,request,client)
     @app.route('/campaigns', methods=['GET'])
     @requires_auth
     def manage_campaigns():
@@ -63,7 +63,6 @@ def configure_routes(app):
     @app.route('/creatives', methods=['GET'])
     @requires_auth
     def manage_creatives():
-        print(request.args)
         return creatives.get_creative(client,request.args)
 
     @app.route('/creatives/<creative_name>', methods=['GET', 'PUT', 'DELETE'])
