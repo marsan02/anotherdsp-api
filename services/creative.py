@@ -7,13 +7,11 @@ def get_creative(client, filters):
     # Select the database and collection
     db = client['creatives']
     creatives = db.creatives
-
-    # Construct a dynamic query based on the filters
-    query = {}
-    for filter in filters:
-        field_name = filter.get("field_name")
-        filter_value = filter.get("filter_value")
-        query[field_name] = filter_value
+    adv_id=filters.get('advertiser_id')
+    query=dict()
+    if adv_id:
+        query =dict({"advertiser_id": adv_id})
+    all_creatives = list(creatives.find(query))
     print(query)
     # Find the creative(s) that match the dynamic query
     all_creatives = list(creatives.find(query))
@@ -43,10 +41,14 @@ def delete_creative(creative_name,client):
     else:
         return jsonify({"message": "creative not found"}), 404
 
-def list_all_creatives(client):
+def list_all_creatives(client,filters):
     db = client['creatives']
     creatives = db.creatives
-    all_creatives = list(creatives.find({}))
+    adv_id=filters.get('advertiser_id')
+    query=dict()
+    if adv_id:
+        query =dict({"advertiser_id": adv_id})
+    all_creatives = list(creatives.find(query))
     for item in all_creatives:
         print(item)
         item["_id"] = str(item["_id"])
@@ -66,13 +68,14 @@ def post_creative(request,client):
         height = data['height']
         creative_type = data['type']
         asset_url = data['asset_url']
-
+        advertiser_id=data['advertiser_id']
         payload = [{
             "name": name,
             "width": width,
             "height": height,
             "type": creative_type,
             "asset_url": asset_url,
+            "advertiser_id": advertiser_id
         }]
         print(payload)
         creative_data = payload

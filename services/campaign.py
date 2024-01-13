@@ -36,12 +36,15 @@ def delete_campaign(campaign_name,client):
     else:
         return jsonify({"message": "Campaign not found"}), 404
 
-def list_all_campaigns(client):
+def list_all_campaigns(client,filters):
     db = client['campaigns']
     campaigns = db.campaigns
-    all_campaigns_with_id = list(campaigns.find({}))
+    adv_id=filters.get('advertiser_id')
+    query=dict()
+    if adv_id:
+        query =dict({"advertiser_id": adv_id})
+    all_campaigns_with_id = list(campaigns.find(query))
     for item in all_campaigns_with_id:
-        print(item)
         item["_id"] = str(item["_id"])
     return jsonify(all_campaigns_with_id)
 
@@ -67,6 +70,7 @@ def post_campaign(request,client):
 def prepare_data(data):
         # Extract form data
     campaign_name = data['campaign_name']
+    advertiser_id=data['advertiser_id']
     ad_types = data['ad_types']
     creatives = data['creatives']
     device_types = data['device_types']
@@ -83,6 +87,7 @@ def prepare_data(data):
     # Create the data payload in the required format
     payload = [{
         "ad_types": ad_types,
+        "advertiser_id": advertiser_id,
         "campaign_name": campaign_name,
         "creatives": creatives,
         "device_types": device_types,

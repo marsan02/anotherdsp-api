@@ -8,6 +8,7 @@ from utils.auth import requires_auth, handle_auth_error, AuthError
 import os
 import services.campaign as campaigns
 import services.creative as creatives
+import services.advertiser as advertisers
 
 load_dotenv()  # This loads the environment variables from .env
 
@@ -39,7 +40,7 @@ def configure_routes(app):
     @app.route('/campaigns', methods=['GET'])
     @requires_auth
     def manage_campaigns():
-        return campaigns.list_all_campaigns(client)
+        return campaigns.list_all_campaigns(client,request.args)
 
     @app.route('/campaign', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
@@ -78,6 +79,35 @@ def configure_routes(app):
         elif request.method == 'DELETE':
             # Delete a creative
             return creative.delete_creative(creative_name,client)
+    
+    @app.route('/submit-advertiser', methods=['POST','PUT'])
+    @requires_auth
+    def submit_advertiser():
+        if request.method == 'POST':
+            #retrieve advertiser
+            return advertisers.post_advertiser(request,client)
+        elif request.method == 'PUT':
+            # Update a advertiser
+            advertiser_id=request.args.get('_id')
+            return advertisers.put_advertiser(advertiser_id,request,client)
+    @app.route('/advertisers', methods=['GET'])
+    @requires_auth
+    def manage_advertiser():
+        return advertisers.list_all_advertisers(client)
+
+    @app.route('/advertiser', methods=['GET', 'PUT', 'DELETE'])
+    @requires_auth
+    def process_advertiser():
+        if request.method == 'GET':
+            #retrieve advertiser
+            return advertisers.get_advertiser(request.args['_id'],client)
+        elif request.method == 'PUT':
+            # Update a advertiser
+            return advertisers.put_advertisers(request.args['_id'],request.json,client)
+    
+        elif request.method == 'DELETE':
+            # Delete a advertiser
+            return advertisers.delete_advertiser(advertiser_name,client)
 
     # Example of a protected route
     @app.route('/')
