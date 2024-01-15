@@ -14,12 +14,12 @@ def get_advertiser(advertiser_id,client):
     else:
         return jsonify({"message": "advertiser not found" }), 404
 
-def put_advertiser(advertiser_id,request,client):
+def put_advertiser(buyer_id,advertiser_id,request,client):
     db = client['advertisers']
     advertisers = db.advertisers
     advertiser_id=ObjectId(advertiser_id)
     payload = prepare_data(request.get_json())[0]
-    result = advertisers.update_one({"_id": advertiser_id}, {"$set": payload})
+    result = advertisers.update_one({"_id": advertiser_id, "buyer_id":buyer_id}, {"$set": payload})
     if result.matched_count:
         print("updated")
         return jsonify({"message": "advertiser updated"})
@@ -45,13 +45,13 @@ def list_all_advertisers(client):
         item["_id"] = str(item["_id"])
     return jsonify(all_advertisers_with_id)
 
-def post_advertiser(request,client):
+def post_advertiser(buyer_id,request,client):
     db = client['advertisers']
     advertisers = db.advertisers
     print("Submitting advertiser")
     try:
 
-        advertiser_data = prepare_data(request.get_json())
+        advertiser_data = prepare_data(buyer_id,request.get_json())
         try:
             advertisers.insert_one(advertiser_data[0])
             return jsonify({"message": "advertiser added"}), 201
@@ -64,13 +64,14 @@ def post_advertiser(request,client):
         print(e)
         return str(e), 500
 
-def prepare_data(data):
+def prepare_data(buyer_id,data):
         # Extract form data
     name = data['name']
     default_brand_url = data['default_brand_url'] 
     # Create the data payload in the required format
     payload = [{
         "name": name,
+        "buyer_id":buyer_id,
         "default_brand_url":default_brand_url
         }]
     return payload
