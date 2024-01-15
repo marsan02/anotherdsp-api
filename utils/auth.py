@@ -54,7 +54,6 @@ def verify_decode_jwt(token):
         jsonurl = urlopen(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
-        claims = jwt.get_unverified_claims(token)
         rsa_key = {}
         for key in jwks["keys"]:
             if key["kid"] == unverified_header["kid"]:
@@ -73,10 +72,8 @@ def verify_decode_jwt(token):
                 audience=API_AUDIENCE,
                 issuer=f"https://{AUTH0_DOMAIN}/"
             )
-            namespace = 'https://anotherdsp.com/claims' # Must match the namespace in the Auth0 Rule
+            namespace = 'https://anotherdsp.com/' # Must match the namespace in the Auth0 Rule
             app_metadata = payload.get(namespace + 'app_metadata', {}) 
-            print(claims)
-            print(app_metadata)
             return payload, app_metadata  # Return both payload and app_metadata  
         raise AuthError({"code": "token_expired", "description": "Token expired"}, 401)
     except JWTError as e:

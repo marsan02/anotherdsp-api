@@ -27,61 +27,67 @@ def configure_routes(app):
 
     @app.route('/countries')
     @requires_auth
-    def get_countries():
+    def get_countries(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         return geo_api.get_countries()
 
     @app.route('/submit-campaign', methods=['POST','PUT'])
     @requires_auth
-    def submit_campaign():
+    def submit_campaign(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'POST':
             #retrieve campaign
-            return campaigns.post_campaign(request,client)
+            return campaigns.post_campaign(buyer_id,request,client)
         elif request.method == 'PUT':
             # Update a campaign
             campaign_id=request.args.get('_id')
-            return campaigns.put_campaign(campaign_id,request,client)
+            return campaigns.put_campaign(buyer_id,campaign_id,request,client)
     @app.route('/campaigns', methods=['GET'])
     @requires_auth
-    def manage_campaigns():
-        return campaigns.list_all_campaigns(client,request.args)
+    def manage_campaigns(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return campaigns.list_all_campaigns(buyer_id,client,request.args)
 
     @app.route('/campaign', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_campaign():
+    def process_campaign(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'GET':
             #retrieve campaign
-            return campaigns.get_campaign(request.args['_id'],client)
+            return campaigns.get_campaign(buyer_id,request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a campaign
-            return campaigns.put_campaign(request.args['_id'],request.json,client)
+            return campaigns.put_campaign(buyer_id,request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a campaign
-            return campaigns.delete_campaign(campaign_name,client)
+            return campaigns.delete_campaign(buyer_id,campaign_name,client)
 
     @app.route('/submit-creative', methods=['POST'])
     @requires_auth
-    def submit_creative():
-        return creatives.post_creative(request,client)
+    def submit_creative(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return creatives.post_creative(buyer_id,request,client)
 
     @app.route('/creatives', methods=['GET'])
     @requires_auth
-    def manage_creatives():
-        return creatives.get_creative(client,request.args)
+    def manage_creatives(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return creatives.get_creative(buyer_id,client,request.args)
 
     @app.route('/creatives/<creative_name>', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
     def process_creative(creative_name):
         if request.method == 'GET':
             #retrieve creative
-            return creatives.get_creative(creative_name,client)
+            return creatives.get_creative(buyer_id,creative_name,client)
         elif request.method == 'PUT':
             # Update a creative
-            return creatives.put_creative(creative_name,request.json,client)
+            return creatives.put_creative(buyer_id,creative_name,request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a creative
-            return creative.delete_creative(creative_name,client)
+            return creative.delete_creative(buyer_id,creative_name,client)
     
     @app.route('/submit-advertiser', methods=['POST','PUT'])
     @requires_auth
@@ -96,110 +102,121 @@ def configure_routes(app):
             return advertisers.put_advertiser(buyer_id,advertiser_id,request,client)
     @app.route('/advertisers', methods=['GET'])
     @requires_auth
-    def manage_advertiser():
-        return advertisers.list_all_advertisers(client)
+    def manage_advertiser(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return advertisers.list_all_advertisers(buyer_id,client)
 
     @app.route('/advertiser', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_advertiser():
+    def process_advertiser(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'GET':
             #retrieve advertiser
-            return advertisers.get_advertiser(request.args['_id'],client)
+            return advertisers.get_advertiser(buyer_id,request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a advertiser
-            return advertisers.put_advertisers(request.args['_id'],request.json,client)
+            return advertisers.put_advertisers(buyer_id,request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a advertiser
-            return advertisers.delete_advertiser(advertiser_name,client)
+            return advertisers.delete_advertiser(buyer_id,advertiser_name,client)
 
     @app.route('/submit-buyer', methods=['POST','PUT'])
     @requires_auth
-    def submit_buyer():
+    def submit_buyer(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'POST':
             #retrieve buyer
-            return buyers.post_buyer(request,client)
+            return buyers.post_buyer(buyer_id,request,client)
         elif request.method == 'PUT':
             # Update a buyer
             buyer_id=request.args.get('_id')
             return buyers.put_buyer(buyer_id,request,client)
     @app.route('/buyers', methods=['GET'])
     @requires_auth
-    def manage_buyer():
-        return buyers.list_all_buyers(client)
+    def manage_buyer(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return buyers.list_all_buyers(buyer_id,client)
 
     @app.route('/buyer', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_buyer():
+    def process_buyer(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'GET':
             #retrieve buyer
-            return buyers.get_buyer(request.args['_id'],client)
+            return buyers.get_buyer(buyer_id,request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a buyer
-            return buyers.put_buyer(request.args['_id'],request.json,client)
+            return buyers.put_buyer(buyer_id,request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a buyer
-            return buyers.delete_buyer(buyer_name,client)
+            return buyers.delete_buyer(buyer_id,buyer_name,client)
 
     @app.route('/submit-deal', methods=['POST','PUT'])
     @requires_auth
-    def submit_deal():
+    def submit_deal(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'POST':
             #retrieve deal
-            return deals.post_deal(request,client)
+            return deals.post_deal(buyer_id,request,client)
         elif request.method == 'PUT':
             # Update a deal
             deal_id=request.args.get('_id')
-            return deals.put_deal(deal_id,request,client)
+            return deals.put_deal(buyer_id,deal_id,request,client)
     @app.route('/deals', methods=['GET'])
     @requires_auth
-    def manage_deal():
-        return deals.list_all_deals(client)
+    def manage_deal(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return deals.list_all_deals(buyer_id,client)
 
     @app.route('/deal', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_deal():
+    def process_deal(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'GET':
             #retrieve deal
-            return deals.get_deal(request.args['_id'],client)
+            return deals.get_deal(buyer_id,request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a deal
-            return deals.put_deal(request.args['_id'],request.json,client)
+            return deals.put_deal(buyer_id,request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a deal
-            return deals.delete_deal(deal_name,client)
+            return deals.delete_deal(buyer_id,deal_name,client)
 
 
     @app.route('/submit-seller', methods=['POST','PUT'])
     @requires_auth
-    def submit_seller():
+    def submit_seller(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'POST':
             #retrieve seller
-            return sellers.post_seller(request,client)
+            return sellers.post_seller(buyer_id,request,client)
         elif request.method == 'PUT':
             # Update a seller
             seller_id=request.args.get('_id')
-            return sellers.put_seller(seller_id,request,client)
+            return sellers.put_seller(buyer_id,seller_id,request,client)
     @app.route('/sellers', methods=['GET'])
     @requires_auth
-    def manage_seller():
-        return sellers.list_all_sellers(client)
+    def manage_seller(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        return sellers.list_all_sellers(buyer_id,client)
 
     @app.route('/seller', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_seller():
+    def process_seller(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'GET':
             #retrieve seller
-            return sellers.get_seller(request.args['_id'],client)
+            return sellers.get_seller(buyer_id,request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a seller
-            return sellers.put_seller(request.args['_id'],request.json,client)
+            return sellers.put_seller(buyer_id,request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a seller
-            return sellers.delete_seller(seller_name,client)
+            return sellers.delete_seller(buyer_id,seller_name,client)
 
 
 

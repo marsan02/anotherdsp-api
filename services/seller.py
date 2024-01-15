@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, request, render_template, redirect,ur
 import requests
 from bson import ObjectId
 
-def get_seller(seller_id,client):
+def get_seller(buyer_id,seller_id,client):
     # Get a single seller
     # Select the database
     db = client['sellers']
@@ -14,7 +14,7 @@ def get_seller(seller_id,client):
     else:
         return jsonify({"message": "seller not found" }), 404
 
-def put_seller(seller_id,request,client):
+def put_seller(buyer_id,seller_id,request,client):
     db = client['sellers']
     sellers = db.sellers
     seller_id=ObjectId(seller_id)
@@ -27,7 +27,7 @@ def put_seller(seller_id,request,client):
         print("error)")
         return jsonify({"message": "seller not found"}), 404
 
-def delete_seller(seller_name,client):
+def delete_seller(buyer_id,seller_name,client):
     db = client['sellers']
     sellers = db.sellers
     result = sellers.delete_one({"seller_name": seller_name})
@@ -36,7 +36,7 @@ def delete_seller(seller_name,client):
     else:
         return jsonify({"message": "seller not found"}), 404
 
-def list_all_sellers(client):
+def list_all_sellers(buyer_id,client):
     db = client['sellers']
     sellers = db.sellers
     all_sellers_with_id = list(sellers.find({}))
@@ -45,7 +45,7 @@ def list_all_sellers(client):
         item["_id"] = str(item["_id"])
     return jsonify(all_sellers_with_id)
 
-def post_seller(request,client):
+def post_seller(buyer_id,request,client):
     db = client['sellers']
     sellers = db.sellers
     print("Submitting seller")
@@ -64,7 +64,7 @@ def post_seller(request,client):
         print(e)
         return str(e), 500
 
-def prepare_data(data):
+def prepare_data(buyer_id,data):
         # Extract form data
     name = data['name']
     # Create the data payload in the required format

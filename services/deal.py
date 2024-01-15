@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, request, render_template, redirect,ur
 import requests
 from bson import ObjectId
 
-def get_deal(deal_id,client):
+def get_deal(buyer_id,deal_id,client):
     # Get a single deal
     # Select the database
     db = client['deals']
@@ -14,7 +14,7 @@ def get_deal(deal_id,client):
     else:
         return jsonify({"message": "deal not found" }), 404
 
-def put_deal(deal_id,request,client):
+def put_deal(buyer_id,deal_id,request,client):
     db = client['deals']
     deals = db.deals
     deal_id=ObjectId(deal_id)
@@ -27,7 +27,7 @@ def put_deal(deal_id,request,client):
         print("error)")
         return jsonify({"message": "deal not found"}), 404
 
-def delete_deal(deal_name,client):
+def delete_deal(buyer_id,deal_name,client):
     db = client['deals']
     deals = db.deals
     result = deals.delete_one({"deal_name": deal_name})
@@ -36,7 +36,7 @@ def delete_deal(deal_name,client):
     else:
         return jsonify({"message": "deal not found"}), 404
 
-def list_all_deals(client):
+def list_all_deals(buyer_id,client):
     db = client['deals']
     deals = db.deals
     all_deals_with_id = list(deals.find({}))
@@ -45,7 +45,7 @@ def list_all_deals(client):
         item["_id"] = str(item["_id"])
     return jsonify(all_deals_with_id)
 
-def post_deal(request,client):
+def post_deal(buyer_id,request,client):
     db = client['deals']
     deals = db.deals
     print("Submitting deal")
@@ -64,7 +64,7 @@ def post_deal(request,client):
         print(e)
         return str(e), 500
 
-def prepare_data(data):
+def prepare_data(buyer_id,data):
         # Extract form data
     name = data['name']
     seller_id = data['seller_id'] 

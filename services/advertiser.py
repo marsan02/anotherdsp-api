@@ -2,13 +2,13 @@ from flask import Flask, request, jsonify, request, render_template, redirect,ur
 import requests
 from bson import ObjectId
 
-def get_advertiser(advertiser_id,client):
+def get_advertiser(buyer_id,advertiser_id,client):
     # Get a single advertiser
     # Select the database
     db = client['advertisers']
     advertisers = db.advertisers
     advertiser_id = ObjectId(advertiser_id)
-    advertiser = advertisers.find_one({"_id": advertiser_id}, {'_id': 0})
+    advertiser = advertisers.find_one({"_id": advertiser_id,"buyer_id":buyer_id}, {'_id': 0})
     if advertiser:
         return jsonify(advertiser)
     else:
@@ -36,10 +36,10 @@ def delete_advertiser(advertiser_name,client):
     else:
         return jsonify({"message": "advertiser not found"}), 404
 
-def list_all_advertisers(client):
+def list_all_advertisers(buyer_id,client):
     db = client['advertisers']
     advertisers = db.advertisers
-    all_advertisers_with_id = list(advertisers.find({}))
+    all_advertisers_with_id = list(advertisers.find({"buyer_id":buyer_id}))
     for item in all_advertisers_with_id:
         print(item)
         item["_id"] = str(item["_id"])

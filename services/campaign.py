@@ -2,24 +2,24 @@ from flask import Flask, request, jsonify, request, render_template, redirect,ur
 import requests
 from bson import ObjectId
 
-def get_campaign(campaign_id,client):
+def get_campaign(buyer_id,campaign_id,client):
     # Get a single campaign
     # Select the database
     db = client['campaigns']
     campaigns = db.campaigns
     campaign_id = ObjectId(campaign_id)
-    campaign = campaigns.find_one({"_id": campaign_id}, {'_id': 0})
+    campaign = campaigns.find_one({"_id": campaign_id, "buyer_id":buyer_id}, {'_id': 0})
     if campaign:
         return jsonify(campaign)
     else:
         return jsonify({"message": "Campaign not found" }), 404
 
-def put_campaign(campaign_id,request,client):
+def put_campaign(buyer_id,campaign_id,request,client):
     db = client['campaigns']
     campaigns = db.campaigns
     campaign_id=ObjectId(campaign_id)
     payload = prepare_data(request.get_json())[0]
-    result = campaigns.update_one({"_id": campaign_id}, {"$set": payload})
+    result = campaigns.update_one({"_id": campaign_id, "buyer_id":buyer_id}, {"$set": payload})
     if result.matched_count:
         print("updated")
         return jsonify({"message": "Campaign updated"})
@@ -27,34 +27,35 @@ def put_campaign(campaign_id,request,client):
         print("error)")
         return jsonify({"message": "Campaign not found"}), 404
 
-def delete_campaign(campaign_name,client):
+def delete_campaign(buyer_id,campaign_name,client):
     db = client['campaigns']
     campaigns = db.campaigns
-    result = campaigns.delete_one({"campaign_name": campaign_name})
+    result = campaigns.delete_one({"campaign_name": campaign_name, "buyer_id":buyer_id})
     if result.deleted_count:
         return jsonify({"message": "Campaign deleted"})
     else:
         return jsonify({"message": "Campaign not found"}), 404
 
-def list_all_campaigns(client,filters):
+def list_all_campaigns(buyer_id,client,filters):
     db = client['campaigns']
     campaigns = db.campaigns
     adv_id=filters.get('advertiser_id')
-    query=dict()
+    query=dict({"buyer_id":buyer_id})
     if adv_id:
-        query =dict({"advertiser_id": adv_id})
+        query["advertiser_id"]= adv_id
     all_campaigns_with_id = list(campaigns.find(query))
     for item in all_campaigns_with_id:
         item["_id"] = str(item["_id"])
     return jsonify(all_campaigns_with_id)
 
-def post_campaign(request,client):
+def post_campaign(buyer_id,request,client):
     db = client['campaigns']
     campaigns = db.campaigns
     print("Submitting Campaign")
     try:
 
-        campaign_data = prepare_data(request.get_json())
+        campaign_data = prepare_data(buyer_id,request.get_json())
+
         try:
             campaigns.insert_one(campaign_data[0])
             return jsonify({"message": "Campaign added"}), 201
@@ -67,7 +68,7 @@ def post_campaign(request,client):
         print(e)
         return str(e), 500
 
-def prepare_data(data):
+def prepare_data(buyer_id,data):
         # Extract form data
     campaign_name = data['campaign_name']
     advertiser_id=data['advertiser_id']
@@ -95,6 +96,7 @@ def prepare_data(data):
             "start": start_date,
             "end": end_date
         },
+        "buyer_id": buyer_id,
         "geography": geography,
         "inventory_type": inventory_type,
         "revenue_per_day": revenue_per_day,

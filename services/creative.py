@@ -3,14 +3,14 @@ import requests
 from bson import ObjectId
 
 
-def get_creative(client, filters):
+def get_creative(buyer_id,client, filters):
     # Select the database and collection
     db = client['creatives']
     creatives = db.creatives
     adv_id=filters.get('advertiser_id')
-    query=dict()
+    query=dict({"buyer_id":buyer_id})
     if adv_id:
-        query =dict({"advertiser_id": adv_id})
+        query["advertiser_id"]= adv_id
     all_creatives = list(creatives.find(query))
     print(query)
     # Find the creative(s) that match the dynamic query
@@ -23,31 +23,31 @@ def get_creative(client, filters):
     else:
         return jsonify({"message": "creative not found"}), 404
 
-def put_creative(creative_name,update_data,client):
+def put_creative(buyer_id,creative_name,update_data,client):
     db = client['creatives']
     creatives = db.creatives
-    result = creatives.update_one({"creative_name": creative_name}, {"$set": updated_data})
+    result = creatives.update_one({"creative_name": creative_name, "buyer_id":buyer_id}, {"$set": updated_data})
     if result.matched_count:
         return jsonify({"message": "creative updated"})
     else:
         return jsonify({"message": "creative not found"}), 404
 
-def delete_creative(creative_name,client):
+def delete_creative(buyer_id,creative_name,client):
     db = client['creatives']
     creatives = db.creatives
-    result = creatives.delete_one({"creative_name": creative_name})
+    result = creatives.delete_one({"creative_name": creative_name,"buyer_id":buyer_id})
     if result.deleted_count:
         return jsonify({"message": "creative deleted"})
     else:
         return jsonify({"message": "creative not found"}), 404
 
-def list_all_creatives(client,filters):
+def list_all_creatives(buyer_id,client,filters):
     db = client['creatives']
     creatives = db.creatives
     adv_id=filters.get('advertiser_id')
-    query=dict()
+    query=dict({"buyer_id":buyer_id})
     if adv_id:
-        query =dict({"advertiser_id": adv_id})
+        query["advertiser_id"]= adv_id
     all_creatives = list(creatives.find(query))
     for item in all_creatives:
         print(item)
@@ -56,7 +56,7 @@ def list_all_creatives(client,filters):
 
     return jsonify(all_creatives)
 
-def post_creative(request,client):
+def post_creative(buyer_id,request,client):
     db = client['creatives']
     creatives = db.creatives
     print("Submitting creative")
@@ -75,7 +75,8 @@ def post_creative(request,client):
             "height": height,
             "type": creative_type,
             "asset_url": asset_url,
-            "advertiser_id": advertiser_id
+            "advertiser_id": advertiser_id,
+            "buyer_id": buyer_id
         }]
         print(payload)
         creative_data = payload
