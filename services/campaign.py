@@ -75,7 +75,9 @@ def post_campaign(buyer_id,request,client):
 def prepare_data(buyer_id,data):
         # Extract form data
     campaign_name = data['campaign_name']
-    advertiser_id=data['advertiser_id']
+    adv = data.get('advertiser_id')
+    if adv:
+        advertiser_id=data['advertiser_id']
     ad_types = data['ad_types']
     creatives = data['creatives']
     device_types = data['device_types']
@@ -92,7 +94,7 @@ def prepare_data(buyer_id,data):
     # Create the data payload in the required format
     payload = [{
         "ad_types": ad_types,
-        "advertiser_id": advertiser_id,
+        "advertiser_id": adv_id,
         "campaign_name": campaign_name,
         "creatives": creatives,
         "device_types": device_types,
