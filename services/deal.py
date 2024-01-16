@@ -18,7 +18,7 @@ def put_deal(buyer_id,deal_id,request,client):
     db = client['deals']
     deals = db.deals
     deal_id=ObjectId(deal_id)
-    payload = prepare_data(request.get_json())[0]
+    payload = prepare_data(buyer_id,request.get_json())[0]
     result = deals.update_one({"_id": deal_id}, {"$set": payload})
     if result.matched_count:
         print("updated")
@@ -27,10 +27,13 @@ def put_deal(buyer_id,deal_id,request,client):
         print("error)")
         return jsonify({"message": "deal not found"}), 404
 
-def delete_deal(buyer_id,deal_name,client):
+def delete_deal(buyer_id,deal_id,client):
     db = client['deals']
     deals = db.deals
-    result = deals.delete_one({"deal_name": deal_name})
+    query = {"_id": ObjectId(deal_id)}
+    if buyer_id:
+        query['buyer_id']=buyer_id
+    result = deals.delete_one(query)
     if result.deleted_count:
         return jsonify({"message": "deal deleted"})
     else:
@@ -51,7 +54,7 @@ def post_deal(buyer_id,request,client):
     print("Submitting deal")
     try:
 
-        deal_data = prepare_data(request.get_json())
+        deal_data = prepare_data(buyer_id,request.get_json())
         try:
             deals.insert_one(deal_data[0])
             return jsonify({"message": "deal added"}), 201
@@ -81,7 +84,7 @@ def prepare_data(buyer_id,data):
         "code": code,
         "buyer_id": buyer_id,
         "deal_floor": deal_floor,
-        "prive_type": price_type,
+        "price_type": price_type,
         "deal_floor_curr": deal_floor_curr
         }]
     return payload

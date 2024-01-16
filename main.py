@@ -57,37 +57,42 @@ def configure_routes(app):
             return campaigns.get_campaign(buyer_id,request.args['_id'],client)
         elif request.method == 'PUT':
             # Update a campaign
-            return campaigns.put_campaign(buyer_id,request.args['_id'],request.json,client)
+            return campaigns.put_campaign(buyer_id,request.args['_id'],request,client)
     
         elif request.method == 'DELETE':
             # Delete a campaign
-            return campaigns.delete_campaign(buyer_id,campaign_name,client)
+            return campaigns.delete_campaign(buyer_id,request.args['_id'],client)
 
-    @app.route('/submit-creative', methods=['POST'])
+    @app.route('/submit-creative', methods=['POST','PUT'])
     @requires_auth
     def submit_creative(*args, **kwargs):
         buyer_id = kwargs.get('buyer_id', None)
-        return creatives.post_creative(buyer_id,request,client)
+        if request.method =='POST':
+            return creatives.post_creative(buyer_id,request,client)
+        elif request.method == 'PUT':
+            return creatives.put_creative(buyer_id,request.args['_id'],request,client)
+         
 
     @app.route('/creatives', methods=['GET'])
     @requires_auth
     def manage_creatives(*args, **kwargs):
         buyer_id = kwargs.get('buyer_id', None)
-        return creatives.get_creative(buyer_id,client,request.args)
+        return creatives.list_all_creatives(buyer_id,client,request.args)
 
-    @app.route('/creatives/<creative_name>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/creative', methods=['GET', 'PUT', 'DELETE'])
     @requires_auth
-    def process_creative(creative_name):
+    def process_creative(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
         if request.method == 'GET':
             #retrieve creative
-            return creatives.get_creative(buyer_id,creative_name,client)
+            return creatives.get_creative(buyer_id,client,request.args)
         elif request.method == 'PUT':
             # Update a creative
-            return creatives.put_creative(buyer_id,creative_name,request.json,client)
+            return creatives.put_creative(buyer_id,request.args['_id'],request.json,client)
     
         elif request.method == 'DELETE':
             # Delete a creative
-            return creative.delete_creative(buyer_id,creative_name,client)
+            return creatives.delete_creative(buyer_id,request.args['_id'],client)
     
     @app.route('/submit-advertiser', methods=['POST','PUT'])
     @requires_auth
@@ -119,7 +124,7 @@ def configure_routes(app):
     
         elif request.method == 'DELETE':
             # Delete a advertiser
-            return advertisers.delete_advertiser(buyer_id,advertiser_name,client)
+            return advertisers.delete_advertiser(buyer_id,request.args['_id'],client)
 
     @app.route('/submit-buyer', methods=['POST','PUT'])
     @requires_auth
@@ -183,7 +188,7 @@ def configure_routes(app):
     
         elif request.method == 'DELETE':
             # Delete a deal
-            return deals.delete_deal(buyer_id,deal_name,client)
+            return deals.delete_deal(buyer_id,request.args['_id'],client)
 
 
     @app.route('/submit-seller', methods=['POST','PUT'])

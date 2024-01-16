@@ -18,7 +18,8 @@ def put_campaign(buyer_id,campaign_id,request,client):
     db = client['campaigns']
     campaigns = db.campaigns
     campaign_id=ObjectId(campaign_id)
-    payload = prepare_data(request.get_json())[0]
+    print(request)
+    payload = prepare_data(buyer_id,request.get_json())[0]
     result = campaigns.update_one({"_id": campaign_id, "buyer_id":buyer_id}, {"$set": payload})
     if result.matched_count:
         print("updated")
@@ -27,10 +28,13 @@ def put_campaign(buyer_id,campaign_id,request,client):
         print("error)")
         return jsonify({"message": "Campaign not found"}), 404
 
-def delete_campaign(buyer_id,campaign_name,client):
+def delete_campaign(buyer_id,campaign_id,client):
     db = client['campaigns']
     campaigns = db.campaigns
-    result = campaigns.delete_one({"campaign_name": campaign_name, "buyer_id":buyer_id})
+    query = {"_id": ObjectId(campaign_id)}
+    if buyer_id:
+        query['buyer_id']=buyer_id
+    result = campaigns.delete_one(query)
     if result.deleted_count:
         return jsonify({"message": "Campaign deleted"})
     else:

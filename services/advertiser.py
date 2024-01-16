@@ -18,7 +18,7 @@ def put_advertiser(buyer_id,advertiser_id,request,client):
     db = client['advertisers']
     advertisers = db.advertisers
     advertiser_id=ObjectId(advertiser_id)
-    payload = prepare_data(request.get_json())[0]
+    payload = prepare_data(buyer_id,request.get_json())[0]
     result = advertisers.update_one({"_id": advertiser_id, "buyer_id":buyer_id}, {"$set": payload})
     if result.matched_count:
         print("updated")
@@ -27,10 +27,13 @@ def put_advertiser(buyer_id,advertiser_id,request,client):
         print("error)")
         return jsonify({"message": "advertiser not found"}), 404
 
-def delete_advertiser(advertiser_name,client):
+def delete_advertiser(buyer_id,advertiser_id,client):
     db = client['advertisers']
     advertisers = db.advertisers
-    result = advertisers.delete_one({"advertiser_name": advertiser_name})
+    query = {"_id": ObjectId(advertiser_id)}
+    if buyer_id:
+        query['buyer_id']=buyer_id
+    result = advertisers.delete_one(query)
     if result.deleted_count:
         return jsonify({"message": "advertiser deleted"})
     else:

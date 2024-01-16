@@ -11,4 +11,4 @@ ua-parser
 user-agents
 gunicorn
 python-jose
-
+snowflake-connector-python

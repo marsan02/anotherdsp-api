@@ -8,7 +8,10 @@ def get_creative(buyer_id,client, filters):
     db = client['creatives']
     creatives = db.creatives
     adv_id=filters.get('advertiser_id')
+    creative_id=filters.get('_id')
     query=dict({"buyer_id":buyer_id})
+    if creative_id:
+        query["_id"]= ObjectId(creative_id)
     if adv_id:
         query["advertiser_id"]= adv_id
     all_creatives = list(creatives.find(query))
@@ -23,19 +26,23 @@ def get_creative(buyer_id,client, filters):
     else:
         return jsonify({"message": "creative not found"}), 404
 
-def put_creative(buyer_id,creative_name,update_data,client):
+def put_creative(buyer_id,creative_id,update_data,client):
+    update_data = update_data.get_json()
     db = client['creatives']
     creatives = db.creatives
-    result = creatives.update_one({"creative_name": creative_name, "buyer_id":buyer_id}, {"$set": updated_data})
+    result = creatives.update_one({"_id": ObjectId(creative_id), "buyer_id":buyer_id}, {"$set": update_data})
     if result.matched_count:
         return jsonify({"message": "creative updated"})
     else:
         return jsonify({"message": "creative not found"}), 404
 
-def delete_creative(buyer_id,creative_name,client):
+def delete_creative(buyer_id,creative_id,client):
     db = client['creatives']
     creatives = db.creatives
-    result = creatives.delete_one({"creative_name": creative_name,"buyer_id":buyer_id})
+    query = {"_id": ObjectId(creative_id)}
+    if buyer_id:
+        query['buyer_id']=buyer_id
+    result = creatives.delete_one(query)
     if result.deleted_count:
         return jsonify({"message": "creative deleted"})
     else:

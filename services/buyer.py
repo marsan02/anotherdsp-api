@@ -39,8 +39,10 @@ def delete_buyer(buyer_name,client):
 def list_all_buyers(buyer_id,client):
     db = client['buyers']
     buyers = db.buyers
-    buyer_id = ObjectId(buyer_id)
-    all_buyers_with_id = list(buyers.find({"_id":buyer_id}))
+    query=dict({})
+    if buyer_id:
+        query=dict({"_id":ObjectId(buyer_id)})
+    all_buyers_with_id = list(buyers.find(query))
     for item in all_buyers_with_id:
         print(item)
         item["_id"] = str(item["_id"])
