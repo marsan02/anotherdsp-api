@@ -94,7 +94,7 @@ def prepare_data(buyer_id,data):
     # Create the data payload in the required format
     payload = [{
         "ad_types": ad_types,
-        "advertiser_id": adv_id,
+        "advertiser_id": adv,
         "campaign_name": campaign_name,
         "creatives": creatives,
         "device_types": device_types,
