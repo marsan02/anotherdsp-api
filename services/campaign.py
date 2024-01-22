@@ -91,6 +91,8 @@ def prepare_data(buyer_id,data):
     goal_type = data['goal_type']
     goal_value= data['goal_value']
     inventory = data['inventory']
+    deals = data['deals']
+
     # Create the data payload in the required format
     payload = [{
         "ad_types": ad_types,
@@ -110,6 +112,7 @@ def prepare_data(buyer_id,data):
         "total_budget": total_budget,
         "goal_type":goal_type,
         "goal_value":goal_value,
-        "inventory":inventory
+        "inventory":inventory,
+        "deals": deals
         }]
     return payload

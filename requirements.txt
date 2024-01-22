@@ -12,3 +12,5 @@ user-agents
 gunicorn
 python-jose
 snowflake-connector-python
+kafka-python
+redis
