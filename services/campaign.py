@@ -50,7 +50,8 @@ def list_all_campaigns(buyer_id,client,filters):
     all_campaigns_with_id = list(campaigns.find(query))
     for item in all_campaigns_with_id:
         item["_id"] = str(item["_id"])
-    return jsonify(all_campaigns_with_id)
+        item["budget"]={"daily": item["revenue_per_day"], "total": item["total_budget"]}
+    return all_campaigns_with_id
 
 def post_campaign(buyer_id,request,client):
     db = client['campaigns']

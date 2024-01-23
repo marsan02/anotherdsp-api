@@ -12,6 +12,7 @@ import services.advertiser as advertisers
 import services.deal as deals
 import services.buyer as buyers
 import services.seller as sellers
+import services.reporting as reporting
 
 load_dotenv()  # This loads the environment variables from .env
 
@@ -169,6 +170,37 @@ def configure_routes(app):
             # Update a deal
             deal_id=request.args.get('_id')
             return deals.put_deal(buyer_id,deal_id,request,client)
+
+
+    @app.route('/reporting', methods=['POST'])
+    @requires_auth
+    def submit_report(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        if request.method == 'POST':
+            payload = request.json
+            return reporting.run_report(buyer_id,payload['dimensions'],payload['metrics'],payload['filters'])
+
+    @app.route('/campaign-monitoring', methods=['GET'])
+    @requires_auth
+    def process_campaign_monitoring(*args, **kwargs):
+        buyer_id = kwargs.get('buyer_id', None)
+        buyer_id = kwargs.get('buyer_id', None)
+        all_campaigns = campaigns.list_all_campaigns(buyer_id,client,request.args)
+        payload = {"dimensions":["campaign_id"],"metrics":["bids","imps","clicks","viewable_imps","spend","revenue"],"filters":[]}
+        reporting_data = reporting.run_report(buyer_id,payload['dimensions'],payload['metrics'],payload['filters'])
+        campaign_lookup = {campaign['_id']: campaign for campaign in all_campaigns}
+        stitched_data = []
+        print(reporting_data)
+        for report in reporting_data:
+            print(report)
+            campaign_id = report['campaign_id']
+            if campaign_id in campaign_lookup:
+                # Merge the dictionaries (Python 3.5+)
+                merged = {**campaign_lookup[campaign_id], **report}
+                stitched_data.append(merged)
+        return stitched_data
+
+
     @app.route('/deals', methods=['GET'])
     @requires_auth
     def manage_deal(*args, **kwargs):
