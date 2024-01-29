@@ -8,12 +8,12 @@ class DealsService(BaseAPIService):
         super().__init__(
             database = "deals",
             schema = {"name":str,
-            "seller_id":str,
+            "seller_id":int,
             "code":str,
-            "buyer_id":str,
+            "buyer_id":int,
             "deal_floor":numbers.Number,
-            "deal_floor_curr": str,
-            "price_type": int},
+            "currency": str,
+            "deal_price_type_id": int},
             client = client
         )
         

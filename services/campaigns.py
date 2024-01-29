@@ -8,23 +8,19 @@ class CampaignsService(BaseAPIService):
     def __init__(self,client):
         super().__init__(
             database = "campaigns",
-            schema = {"campaign_name":str,
+            schema = {"name":str,
             "ad_type": int,
-            "creatives": list,
-            "device_types": list,
-           "geography": list,
-            "inventory_type": list,
+            "creatives": str,
             "daily_budget": numbers.Number,
             "total_budget": numbers.Number,
-            "state": str,
-            "goal_type": str,
+            "active": int,
+            "goal_type": int,
             "goal_value": numbers.Number,
-            "inventory": list,
-            "deals": list,
+            "targeting": str,
             "start_date": str,
             "end_date": str,
-            "advertiser_id": str,
-            "buyer_id": str       
+            "advertiser_id": int,
+            "buyer_id": int       
             },
             client = client
         )

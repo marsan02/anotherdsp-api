@@ -12,7 +12,7 @@ class CreativesService(BaseAPIService):
             "height":int,
             "ad_type":int,
             "asset_url":str,
-            "advertiser_id": str,
+            "advertiser_id": int,
             "landing_page_url": str},
             client = client
         )
