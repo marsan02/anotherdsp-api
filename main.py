@@ -63,7 +63,7 @@ def configure_routes(app):
                 buyer_id = request.args.get('buyer_id')
             if buyer_id:
                 buyer_id=int(buyer_id)
-            all_campaigns = campaigns.get_mysql(request.args, request.args.get('id'),buyer_id,mysql_conn)
+            all_campaigns, status = campaigns.get_mysql(request.args, request.args.get('id'),buyer_id,mysql_conn)
             payload = {
                 "dimensions": ["campaign_id"],
                 "metrics": ["bids", "imps", "clicks", "viewable_imps", "spend", "revenue"],
@@ -75,20 +75,22 @@ def configure_routes(app):
             reporting_lookup = {report['campaign_id']: report for report in reporting_data}
 
             stitched_data = []
-            for campaign in all_campaigns:
-                campaign_id = campaign['id']
-                if campaign_id in reporting_lookup:
-                    # Merge the dictionaries (Python 3.5+)
-                    merged = {**campaign, **reporting_lookup[campaign_id]}
-                else:
-                    # Create a record with all metrics set to 0 for campaigns without reporting data
-                    metrics_zero = {metric: 0 for metric in payload['metrics']}
-                    metrics_zero['campaign_id'] = campaign_id
-                    merged = {**campaign, **metrics_zero}
+            if status == 200:
+                for campaign in all_campaigns:
+                    campaign_id = campaign['id']
+                    if campaign_id in reporting_lookup:
+                        # Merge the dictionaries (Python 3.5+)
+                        merged = {**campaign, **reporting_lookup[campaign_id]}
+                    else:
+                        # Create a record with all metrics set to 0 for campaigns without reporting data
+                        metrics_zero = {metric: 0 for metric in payload['metrics']}
+                        metrics_zero['campaign_id'] = campaign_id
+                        merged = {**campaign, **metrics_zero}
 
-                stitched_data.append(merged)
-
-            return stitched_data
+                    stitched_data.append(merged)
+                return stitched_data
+            else:
+                return jsonify({"message": "object not found"}), 404      
 
         @app.route('/campaigns', methods=['POST','GET', 'PUT', 'DELETE'])
         @requires_auth

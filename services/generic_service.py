@@ -47,15 +47,15 @@ class BaseAPIService:
         if buyer_id and self.database =='buyers':
             query_filters = query_filters + f' AND id={buyer_id}'
 
-        query = f'SELECT id, {columns} FROM {self.database} WHERE 1=1 AND deleted=0 {query_filters}'
+        query = f'SELECT {columns} FROM {self.database} WHERE 1=1 AND deleted=0 {query_filters}'
         print(query)
         result_list = conn.ExecQuery(query)
         if result_list:
             # Serialize the list of dictionaries to JSON
             if object_id:
-                return result_list[0]
+                return result_list[0], 200
             else:
-                return result_list
+                return result_list, 200
         else:
             return jsonify({"message": "object not found"}), 404
 

@@ -7,13 +7,14 @@ class CreativesService(BaseAPIService):
     def __init__(self,client):
         super().__init__(
             database = "creatives",
-            schema = {"name":str,
+            schema = {"id":int,"name":str,
             "width":int,
             "height":int,
             "ad_type":int,
             "asset_url":str,
             "advertiser_id": int,
-            "landing_page_url": str},
+            "landing_page_url": str,
+            "buyer_id": int},
             client = client
         )
         

@@ -7,6 +7,6 @@ class AdvertisersService(BaseAPIService):
     def __init__(self,client):
         super().__init__(
             database = "advertisers",
-            schema = {"name":str,"default_brand_url":str},
+            schema = {"id":int,"name":str,"default_brand_url":str,"buyer_id":int},
             client = client
         )

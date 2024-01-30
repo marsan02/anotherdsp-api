@@ -15,7 +15,7 @@ def run_report(buyer_id,dimensions, metrics, filters):
         account=account
     )
     if buyer_id:
-        query = 'WHERE 1=1 AND buyer_id=' + buyer_id
+        query = f'WHERE 1=1 AND buyer_id={buyer_id}'
     else:
         query = 'WHERE 1=1'
     # Build the SELECT clause with SUM for metrics

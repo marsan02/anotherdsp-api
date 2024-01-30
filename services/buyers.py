@@ -7,6 +7,6 @@ class BuyersService(BaseAPIService):
     def __init__(self,client):
         super().__init__(
             database = "buyers",
-            schema = {"name":str},
+            schema = {"id":int,"name":str},
             client = client
         )
