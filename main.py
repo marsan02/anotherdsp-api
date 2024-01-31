@@ -15,24 +15,21 @@ from services.campaigns import CampaignsService
 from services.advertisers import AdvertisersService
 import pypyodbc
 from utils.mysql_connection import Database
-
+from services.user_management import UserManagementService
 
 load_dotenv()  # This loads the environment variables from .env
 
 
 
 def configure_routes(app):
-
-
     # MongoDB Atlas connection URI
     mongo_uri = os.environ.get("MONGO_URI")
     client = MongoClient(mongo_uri)
-
+    auth0_domain = os.environ.get("AUTH0_DOMAIN")
+    auth0_client_id = os.environ.get("AUTH0_CLIENT_ID")
+    auth0_client_secret = os.environ.get("AUTH0_CLIENT_SECRET")
     try:
-        # Connection string
-        #connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={mysql_server};DATABASE={mysql_database};UID={mysql_username};PWD={mysql_password}'
         mysql_conn = Database()
-        #mysql_conn= connection_string
         app.register_error_handler(AuthError, handle_auth_error)
         sellers = SellersService(client)
         buyers = BuyersService(client)
@@ -40,12 +37,25 @@ def configure_routes(app):
         creatives = CreativesService(client)
         campaigns = CampaignsService(client)
         advertisers = AdvertisersService(client)
-
+        users = UserManagementService(auth0_domain,auth0_client_id,auth0_client_secret)
+        users.get_token()
         @app.route('/countries')
         @requires_auth
         def get_countries(*args, **kwargs):
             buyer_id = kwargs.get('buyer_id', None)
             return geo_api.get_countries()
+        
+        @app.route('/users', methods=['GET','POST','PUT','DELETE'])
+        def users_service(*args, **kwargs):
+            print(request.args.to_dict())
+            if request.method == 'GET':
+                return users.get_users(request.args.to_dict())
+            if request.method == 'POST':
+                return users.create_user(request.json)
+            if request.method == 'PUT':
+                return users.edit_user(request.args.get('user_id'),request.json)
+            if request.method == 'DELETE':
+                return users.delete_user(request.args.get('user_id'))
 
         @app.route('/reporting', methods=['POST'])
         @requires_auth
