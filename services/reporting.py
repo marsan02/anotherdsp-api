@@ -6,7 +6,7 @@ def run_report(buyer_id,dimensions, metrics, filters):
     # Snowflake connection parameters
     user = os.environ.get("SNOWFLAKE_USER")
     password = os.environ.get("SNOWFLAKE_PASSWORD")
-    account = os.environ.get('SNOWFLALE_ACCOUNT')
+    account = os.environ.get('SNOWFLAKE_ACCOUNT')
     table = os.environ.get('SNOWFLAKE_REPORTING_TABLE')
     # Connect to Snowflake
     conn = snowflake.connector.connect(
