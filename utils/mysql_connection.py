@@ -8,7 +8,7 @@ pyodbc.pooling= True
 class Database:
     def __init__(self):
         self.server = os.environ.get("MYSQL_SERVER")
-        self.driver = '{ODBC Driver 17 for SQL Server}'
+        self.driver = '{ODBC Driver 18 for SQL Server}'
         self.port = 1433
         self.database = os.environ.get("MYSQL_DATABASE")
         self.username = os.environ.get("MYSQL_USERNAME")
@@ -22,7 +22,7 @@ class Database:
     def _Getconnect(self):
         #self.conn = self.Pool.connection()
         print("Connecting")
-        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.server};DATABASE={self.database};UID={self.username};PWD={self.password}'
+        connection_string = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={self.server};DATABASE={self.database};UID={self.username};PWD={self.password}'
         conn = pyodbc.connect(connection_string)
         return conn
     # query sql
