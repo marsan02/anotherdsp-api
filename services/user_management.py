@@ -5,7 +5,9 @@ class UserManagementService:
         self.domain = domain
         self.client_id = client_id
         self.client_secret = client_secret
+        self.token = ''
     def get_token(self):
+        """
         url = f"https://{self.domain}/oauth/token"
         payload = {
             "client_id": self.client_id,
@@ -16,7 +18,9 @@ class UserManagementService:
         response = requests.post(url, json=payload)
         resp_json = response.json()
         self.token = resp_json["access_token"]
-
+        """ 
+        print("Get Token Disabled")
+    
     def create_user(self,user_data):
         url = f"https://{self.domain}/api/v2/users"
         headers = {
