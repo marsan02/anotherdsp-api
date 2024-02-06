@@ -47,7 +47,7 @@ class BaseAPIService:
         if buyer_id and self.database =='buyers':
             query_filters = query_filters + f' AND id={buyer_id}'
 
-        query = f'SELECT {columns} FROM {self.database} WHERE 1=1 AND deleted=0 {query_filters}'
+        query = f'SELECT {columns},last_edit,created_at FROM {self.database} WHERE 1=1 AND deleted=0 {query_filters}'
         print(query)
         result_list = conn.ExecQuery(query)
         if result_list:
