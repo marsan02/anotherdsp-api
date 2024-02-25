@@ -9,11 +9,15 @@ def run_report(buyer_id,dimensions, metrics, filters):
     account = os.environ.get('SNOWFLALE_ACCOUNT')
     table = os.environ.get('SNOWFLAKE_REPORTING_TABLE')
     # Connect to Snowflake
-    conn = snowflake.connector.connect(
-        user=user,
-        password=password,
-        account=account
-    )
+    try:
+        conn = snowflake.connector.connect(
+            user=user,
+            password=password,
+            account=account
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        return {}
     if buyer_id:
         query = f'WHERE 1=1 AND buyer_id={buyer_id}'
     else:

@@ -80,9 +80,8 @@ def configure_routes(app):
                 "filters": []
             }
             reporting_data = reporting.run_report(buyer_id, payload['dimensions'], payload['metrics'], payload['filters'])
-
             # Create a lookup for campaign reporting data
-            reporting_lookup = {report['campaign_id']: report for report in reporting_data}
+            reporting_lookup = {report.get('campaign_id'): report for report in reporting_data}
 
             stitched_data = []
             if status == 200:
@@ -115,7 +114,7 @@ def configure_routes(app):
             elif request.method == 'PUT':
                 return campaigns.put_mysql(request.args['id'],request.json,buyer_id,mysql_conn)
             elif request.method == 'DELETE':
-                return campaigns.get_mysql(request.args['id'],buyer_id,mysql_conn)
+                return campaigns.delete_mysql(request.args['id'],buyer_id,mysql_conn)
             elif request.method == 'POST':
                 return campaigns.post_mysql(request.json,buyer_id,mysql_conn)
         
@@ -128,13 +127,13 @@ def configure_routes(app):
             if buyer_id:
                 buyer_id=int(buyer_id)
             if request.method == 'GET':
-                result =  advertisers.get_mysql(request.args,request.args.get('id'),1,mysql_conn)
+                result =  advertisers.get_mysql(request.args,request.args.get('id'),buyer_id,mysql_conn)
             elif request.method == 'PUT':
-                result = advertisers.put_mysql(request.args['id'],request.json,1,mysql_conn)
+                result = advertisers.put_mysql(request.args['id'],request.json,buyer_id,mysql_conn)
             elif request.method == 'DELETE':
-                result = advertisers.delete_mysql(request.args['id'],1,mysql_conn)
+                result = advertisers.delete_mysql(request.args['id'],buyer_id,mysql_conn)
             elif request.method == 'POST':
-                result = advertisers.post_mysql(request.json,1,mysql_conn)
+                result = advertisers.post_mysql(request.json,buyer_id,mysql_conn)
             return result
                     
         @app.route('/deals', methods=['POST','GET', 'PUT', 'DELETE'])
@@ -196,7 +195,7 @@ def configure_routes(app):
             elif request.method == 'PUT':
                 result= buyers.put_mysql(request.args['id'],request.json,buyer_id,mysql_conn)
             elif request.method == 'DELETE':
-                result= buyers.delete(request.args['id'],buyer_id)
+                result= buyers.delete_mysql(request.args['id'],buyer_id,mysql_conn)
             elif request.method == 'POST':
                 result= buyers.post_mysql(request.json,buyer_id,mysql_conn)
             return result
